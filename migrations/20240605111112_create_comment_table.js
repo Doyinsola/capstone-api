@@ -18,7 +18,7 @@ exports.up = function (knex) {
                 .references("user.id")
                 .onUpdate("CASCADE")
                 .onDelete("CASCADE");
-            table.text("content", 1000).notNullable();
+            table.text("comment_text", 1000).notNullable();
             table.smallint("likes").notNullable().defaultTo(0);
             table.timestamp("created_at").defaultTo(knex.fn.now());
             table
