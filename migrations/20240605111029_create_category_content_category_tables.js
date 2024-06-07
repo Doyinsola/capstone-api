@@ -38,5 +38,5 @@ exports.up = function (knex) {
  * @returns { Promise<void> }
  */
 exports.down = function (knex) {
-    return knex.schema.dropTable("category").dropTable("content_category");
+    return knex.schema.dropTable("content_category").dropTable("category");
 };
