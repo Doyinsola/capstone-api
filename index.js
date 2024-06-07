@@ -11,6 +11,9 @@ app.use(express.json());
 const featuredRoutes = require("./routes/featured");
 app.use("/api/featuredContent", featuredRoutes);
 
+const categoryRoutes = require("./routes/category");
+app.use("/api/categories", categoryRoutes);
+
 app.listen(PORT, () => {
     console.log(`The api server is running at: http://localhost:${PORT}`);
 });
