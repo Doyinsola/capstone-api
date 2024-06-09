@@ -1,5 +1,6 @@
 const knex = require("knex")(require("../knexfile"));
 
+
 const getContent = async (req, res) => {
     const { id } = req.params;
     try {
@@ -73,7 +74,7 @@ const likeContent = async (req, res) => {
 const getComments = async (req, res) => {
     const { id } = req.params;
     try {
-        const commentData = await knex("comment")
+        const commentData = await knex
             .select(
                 knex.raw("concat(user.first_name, ' ' , user.last_name) as name"),
                 "comment_text",
@@ -91,6 +92,49 @@ const getComments = async (req, res) => {
         res.status(400).send("Error retrieving comment");
     }
 };
+
+const postComment = async (req, res) => {
+    const { id } = req.params;
+    let {
+        content_id,
+        user_id,
+        comment_text,
+    } = req.body;
+
+    if (!content_id || !user_id || !comment_text) {
+        return res.status(400).json({ error: "All fields are required." });
+    };
+
+    if (content_id == id) {
+        try {
+            const addComment = await knex("comment")
+                .insert(req.body);
+
+            const newCommentId = addComment[0];
+            const newComment = await knex
+                .select(
+                    knex.raw("concat(user.first_name, ' ' , user.last_name) as name"),
+                    "comment_text",
+                    "comment.id",
+                    "comment.likes",
+                    "comment.created_at as timestamp"
+                )
+                .from("comment")
+                .join("content", "content.id", "comment.content_id")
+                .join("user", "user.id", "comment.user_id")
+                .where("comment.id", newCommentId);
+            res.status(201).json(newComment);
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({
+                message: "Unable to post new comment",
+            });
+        }
+    } else {
+        res.status(404).json({ error: `Unable to add comment to content with id ${id}` })
+    }
+
+}
 
 const likeComment = async (req, res) => {
     const { contentId, commentId } = req.params;
@@ -160,6 +204,7 @@ module.exports = {
     getContent,
     likeContent,
     getComments,
+    postComment,
     likeComment,
     deleteComment,
 }
