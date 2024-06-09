@@ -17,4 +17,7 @@ router
     .route("/:contentId/comments/:commentId/like")
     .patch(contentController.likeComment);
 
+router
+    .route("/:contentId/comments/:commentId")
+    .delete(contentController.deleteComment);
 module.exports = router;
