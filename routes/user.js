@@ -8,4 +8,9 @@ router
 router
     .route("/profile")
     .get(userController.getUser);
+
+router
+    .route("/register")
+    .post(userController.signUpUser);
+
 module.exports = router;
