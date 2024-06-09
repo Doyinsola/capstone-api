@@ -2,6 +2,58 @@ const knex = require("knex")(require("../knexfile"));
 const jwt = require("jsonwebtoken");
 const bcrypt = require('bcrypt');
 
+function isValidEmail(email) {
+    if (!email.includes('@') || !email.includes('.')) {
+        return false;
+    }
+
+    if (email.lastIndexOf('.') <= email.indexOf('@')) {
+        return false;
+    }
+
+    const atIndex = email.indexOf('@');
+    if (email[atIndex - 1] === ' ' || email[atIndex + 1] === ' ') {
+        return false;
+    }
+
+    if (atIndex === 0 || email.lastIndexOf('.') === email.length - 1) {
+        return false;
+    }
+    return true;
+}
+
+
+
+const signUpUser = async (req, res) => {
+    let { first_name, last_name, email, password } = req.body;
+
+    if (!first_name || !last_name || !email || !password) {
+        return res.status(400).send("Please enter the required fields");
+    };
+
+    if (!isValidEmail(email)) {
+        return res.status(400).json({ error: "Please input a valid email." });
+    }
+
+    password = bcrypt.hashSync(password, 10);
+    const newUser = {
+        first_name,
+        last_name,
+        email,
+        password
+    };
+
+    try {
+        await knex("user")
+            .insert(newUser);
+
+        res.status(201).send("User registered successfully!");
+    } catch (error) {
+        console.log(error);
+        res.status(400).send("User registration failed!");
+    }
+};
+
 const loginUser = async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -54,6 +106,7 @@ const getUser = async (req, res) => {
 }
 
 module.exports = {
+    signUpUser,
     loginUser,
     getUser,
 }
