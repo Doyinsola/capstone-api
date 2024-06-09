@@ -11,7 +11,8 @@ router
 
 router
     .route("/:id/comments")
-    .get(contentController.getComments);
+    .get(contentController.getComments)
+    .post(contentController.postComment);
 
 router
     .route("/:contentId/comments/:commentId/like")
