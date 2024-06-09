@@ -4,8 +4,15 @@ const contentController = require("../controllers/content-controller");
 router
     .route("/:id")
     .get(contentController.getContent);
+
+router
+    .route("/:id/likes")
+    .patch(contentController.likeContent);
+
 router
     .route("/:id/comments")
-    .get(contentController.getComments)
+    .get(contentController.getComments);
+
+
 
 module.exports = router;
