@@ -136,9 +136,30 @@ const likeComment = async (req, res) => {
     }
 }
 
+const deleteComment = async (req, res) => {
+    const { contentId, commentId } = req.params;
+    try {
+        const deletedComment = await knex("comment")
+            .where("id", commentId)
+            .delete();
+
+        if (deletedComment === 0) {
+            return res
+                .status(404)
+                .json({ message: `Comment with ID ${commentId} not found` });
+        }
+        res.status(204).json(deletedComment)
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: `Unable to delete comment with id ${commentId}`
+        });
+    }
+}
 module.exports = {
     getContent,
     likeContent,
     getComments,
-    likeComment
+    likeComment,
+    deleteComment,
 }
