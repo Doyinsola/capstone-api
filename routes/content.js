@@ -6,13 +6,15 @@ router
     .get(contentController.getContent);
 
 router
-    .route("/:id/likes")
+    .route("/:id/like")
     .patch(contentController.likeContent);
 
 router
     .route("/:id/comments")
     .get(contentController.getComments);
 
-
+router
+    .route("/:contentId/comments/:commentId/like")
+    .patch(contentController.likeComment);
 
 module.exports = router;
