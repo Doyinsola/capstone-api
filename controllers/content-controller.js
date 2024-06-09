@@ -3,7 +3,7 @@ const knex = require("knex")(require("../knexfile"));
 const getContent = async (req, res) => {
     const { id } = req.params;
     try {
-        let contentData = await knex
+        const contentData = await knex
             .select(
                 "content.id",
                 "content.name",
@@ -25,6 +25,48 @@ const getContent = async (req, res) => {
     } catch (error) {
         console.log(error);
         res.status(400).send("Error retrieving content");
+    }
+};
+
+const likeContent = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const contentLikes = await knex
+            .select(
+                "content.likes",
+            )
+            .from("content")
+            .where("content.id", id)
+            .first();
+        contentLikes.likes += 1;
+        req.body = { "likes": contentLikes.likes };
+
+        const likedContent = await knex("content")
+            .where({ id })
+            .update(req.body);
+
+        if (likedContent === 0) {
+            return res.status(404).json({
+                message: `Content with ID ${req.params.id} not found`
+            });
+        };
+
+        const updatedContent = await knex
+            .select(
+                "content.id",
+                "content.name",
+                "content.likes",
+                "content.updated_at"
+            )
+            .from("content")
+            .where("content.id", id)
+            .first();
+        res.status(200).json(updatedContent);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: `Unable to like content with ID ${req.params.id}`
+        });
     }
 }
 
@@ -49,8 +91,10 @@ const getComments = async (req, res) => {
         console.log(error);
         res.status(400).send("Error retrieving comment");
     }
-}
+};
+
 module.exports = {
     getContent,
+    likeContent,
     getComments,
 }
