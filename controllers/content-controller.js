@@ -47,7 +47,7 @@ const likeContent = async (req, res) => {
 
         if (likedContent === 0) {
             return res.status(404).json({
-                message: `Content with ID ${req.params.id} not found`
+                message: `Content with ID ${id} not found`
             });
         };
 
@@ -65,7 +65,7 @@ const likeContent = async (req, res) => {
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            message: `Unable to like content with ID ${req.params.id}`
+            message: `Unable to like content with ID ${id}`
         });
     }
 }
@@ -75,7 +75,6 @@ const getComments = async (req, res) => {
     try {
         const commentData = await knex("comment")
             .select(
-                "content.name",
                 knex.raw("concat(user.first_name, ' ' , user.last_name) as name"),
                 "comment_text",
                 "comment.id",
@@ -93,8 +92,53 @@ const getComments = async (req, res) => {
     }
 };
 
+const likeComment = async (req, res) => {
+    const { contentId, commentId } = req.params;
+    try {
+        const commentLikes = await knex
+            .select(
+                "comment.likes",
+            )
+            .from("comment")
+            .where("comment.id", commentId)
+            .first();
+        commentLikes.likes += 1;
+        req.body = { "likes": commentLikes.likes };
+
+        const likedComment = await knex("comment")
+            .where("id", commentId)
+            .update(req.body);
+
+        if (likedComment === 0) {
+            return res.status(404).json({
+                message: `Comment with ID ${commentId} not found`
+            });
+        };
+
+        const updatedComment = await knex
+            .select(
+                knex.raw("concat(user.first_name, ' ' , user.last_name) as name"),
+                "comment_text",
+                "comment.id",
+                "comment.likes",
+                "comment.updated_at as timestamp"
+            )
+            .from("comment")
+            .join("user", "user.id", "comment.user_id")
+            .where("comment.id", commentId)
+            .first();
+        res.status(200).json(updatedComment);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: `Unable to like comment with ID ${commentId}`
+        });
+    }
+}
+
 module.exports = {
     getContent,
     likeContent,
     getComments,
+    likeComment
 }
