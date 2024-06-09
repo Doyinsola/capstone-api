@@ -42,7 +42,7 @@ const getCategoryContent = async (req, res) => {
     try {
         const categoryWithContent = await knex("content_category")
             .where("category_id", id);
-        if (categoryWithContent == 0) {
+        if (categoryWithContent === 0) {
             res.status(404).json({ message: "Category not found" });
         } else {
             const data = await knex

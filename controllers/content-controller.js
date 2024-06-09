@@ -21,6 +21,16 @@ const getContent = async (req, res) => {
             .where("content.id", id)
             .groupBy("content.id")
             .first();
+        res.status(200).json(contentData);
+    } catch (error) {
+        console.log(error);
+        res.status(400).send("Error retrieving content");
+    }
+}
+
+const getComments = async (req, res) => {
+    const { id } = req.params;
+    try {
         const commentData = await knex("comment")
             .select(
                 "content.name",
@@ -34,14 +44,13 @@ const getContent = async (req, res) => {
             .join("content", "content.id", "comment.content_id")
             .join("user", "user.id", "comment.user_id")
             .where("comment.content_id", id);
-        contentData = { ...contentData, "comment": commentData }
-        res.status(200).json(contentData);
+        res.status(200).json(commentData);
     } catch (error) {
         console.log(error);
-        res.status(400).send("Error retrieving content");
+        res.status(400).send("Error retrieving comment");
     }
 }
-
 module.exports = {
     getContent,
+    getComments,
 }
