@@ -18,6 +18,10 @@ app.use("/api/categories", categoryRoutes);
 const contentRoutes = require("./routes/content");
 app.use("/api/content", contentRoutes);
 
+const userRoutes = require("./routes/user");
+app.use("/api/user", userRoutes);
+
+
 app.listen(PORT, () => {
     console.log(`The api server is running at: http://localhost:${PORT}`);
 });
