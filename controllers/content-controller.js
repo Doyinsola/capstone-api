@@ -11,6 +11,7 @@ const getContent = async (req, res) => {
                 "content.likes",
                 "content.image_URL",
                 "content.featured",
+                "content.external_URL",
                 knex.raw('JSON_ARRAYAGG(category.category_name) as Categories'),
                 "content.description",
             )
